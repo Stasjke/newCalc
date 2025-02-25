@@ -1,0 +1,81 @@
+.Calculator {
+    width: 90vw;
+    max-width: 400px;
+    height: 70vh;
+    max-height: 500px;
+    position: relative;
+    margin: 5vh auto;
+}
+
+.Display {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background: #2b293d;
+    height: 20%;
+    color: #80c9c9;
+    font-size: 3vw;
+    padding: 0.5em;
+}
+
+.Keypad {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    height: 80%;
+}
+
+.Button {
+    background: #cad2c5;
+    display: flex;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    width: 33.33%;
+    font-size: 3vw;
+    color: rgba(0, 0, 0, 0.5);
+    height: 20%;
+    min-width: 25%;
+}
+
+.Button[data-value="null"] {
+    pointer-events: none !important;
+}
+
+.Button:hover {
+	background: #08273b;
+	cursor: default;
+	color: wheat;
+}
+
+@media (max-width: 600px) {
+    .Calculator {
+        width: 95vw;
+        height: 80vh;
+        margin: 2.5vh auto;
+    }
+
+    .Display {
+        font-size: 5vw;
+    }
+
+    .Button {
+        font-size: 4vw;
+    }
+}
+
+@media (min-width: 1200px) {
+    .Calculator {
+        max-width: 500px;
+        max-height: 600px;
+    }
+
+    .Display {
+        font-size: 2rem;
+    }
+
+    .Button {
+        font-size: 1.5rem;
+    }
+}
