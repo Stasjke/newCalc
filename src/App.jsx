@@ -5,23 +5,10 @@ const Calculator = () => {
 	const [operand1, setOperand1] = useState('');
 	const [operator, setOperator] = useState('');
 	const [operand2, setOperand2] = useState('');
-	const [displayValue, setDisplayValue] = useState('0');
 	const [colorText, setColorText] = useState('#80c9c9');
 
-	const createButton = (label, value, onClick, key) => {
-		const buttonStyle = value === null ? { pointerEvents: 'none' } : {};
-		return (
-			<button
-				className={styles.Button}
-				onClick={onClick}
-				data-value={value}
-				key={key}
-				style={buttonStyle}
-			>
-				{label}
-			</button>
-		);
-	};
+	// displayValue теперь вычисляется динамически при рендеринге
+	const displayValue = `${operand1} ${operator} ${operand2}`;
 
 	const NUMS = [
 		{ id: '001', label: 'C', value: 'C' },
@@ -41,62 +28,71 @@ const Calculator = () => {
 		{ id: '015', label: '=', value: '=' },
 	];
 
-	const handleNumberClick = (number) => {
-		if (!operator) {
-			setOperand1((prev) => prev + number);
-			setDisplayValue((prev) => (prev === '0' ? number : prev + number));
-			setColorText('');
-		} else {
-			setColorText('');
-			setOperand2((prev) => prev + number);
-			setDisplayValue((prev) => {
-				if (prev.includes(operator)) {
-					return prev + number;
-				}
-				return prev + operator + number;
-			});
-		}
-	};
-
 	const calcResult = () => {
-		if (!operand1 || !operand2 || !operator) return;
+		if (!operand1 || !operand2 || !operator) return operand1;
+
+		const num1 = Number(operand1);
+		const num2 = Number(operand2);
+
+		if (isNaN(num1) || isNaN(num2)) return 'Error';
 
 		let result;
-		const n1 = Number(operand1);
-		const n2 = Number(operand2);
-
-		if (operator === '+') {
-			result = n1 + n2;
-		} else if (operator === '-') {
-			result = n1 - n2;
+		switch (operator) {
+			case '+':
+				result = num1 + num2;
+				break;
+			case '-':
+				result = num1 - num2;
+				break;
+			default:
+				return 'Error';
 		}
 
-		setDisplayValue(result.toString());
-		setOperand1(result.toString());
-		setOperand2('');
-		setOperator('');
+		return result.toString();
+	};
+
+	const handleButtonClick = (value) => {
 		setColorText('');
-	};
 
-	const handleOperatorClick = (oper) => {
-		if (oper === 'C') {
-			setOperand1('');
-			setOperand2('');
-			setOperator('');
-			setDisplayValue('0');
-			setColorText('');
-		} else {
-			setOperator(oper);
-			setColorText('');
-			setDisplayValue((prev) => {
-				return prev + oper;
-			});
+		switch (value) {
+			case 'C':
+				setOperand1('');
+				setOperand2('');
+				setOperator('');
+				break;
+			case '=':
+				if (operand1 && operand2 && operator) {
+					const result = calcResult();
+					setOperand1(result);
+					setOperand2('');
+					setOperator('');
+					setColorText('red');
+				}
+				break;
+			case '+':
+			case '-':
+				if (operand1 && !operand2) {
+					setOperator(value);
+				} else if (operand1 && operand2) {
+					const result = calcResult();
+					setOperand1(result);
+					setOperand2('');
+					setOperator(value);
+				} else if (!operand1) {
+					setOperand1('0');
+					setOperator(value);
+				}
+				break;
+			default:
+				if (!isNaN(Number(value))) {
+					if (!operator) {
+						setOperand1(operand1 + value);
+					} else {
+						setOperand2(operand2 + value);
+					}
+				}
+				break;
 		}
-	};
-
-	const handleEqualClick = () => {
-		calcResult();
-		setColorText('red');
 	};
 
 	return (
@@ -105,20 +101,16 @@ const Calculator = () => {
 				{displayValue}
 			</div>
 			<div className={styles.Keypad}>
-				{NUMS.map((button) => {
-					return createButton(
-						button.label,
-						button.value,
-						button.value === '='
-							? handleEqualClick
-							: button.value === 'C'
-							? () => handleOperatorClick(button.value)
-							: button.value === '+' || button.value === '-'
-							? () => handleOperatorClick(button.value)
-							: () => handleNumberClick(button.value),
-						button.id,
-					);
-				})}
+				{NUMS.map((button) => (
+					<button
+						key={button.id}
+						className={styles.Button}
+						onClick={() => button.value && handleButtonClick(button.value)}
+						disabled={button.value === null}
+					>
+						{button.label}
+					</button>
+				))}
 			</div>
 		</div>
 	);
