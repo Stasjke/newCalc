@@ -7,7 +7,6 @@ const Calculator = () => {
 	const [operand2, setOperand2] = useState('');
 	const [colorText, setColorText] = useState('#80c9c9');
 
-	// displayValue теперь вычисляется динамически при рендеринге
 	const displayValue = `${operand1} ${operator} ${operand2}`;
 
 	const NUMS = [
